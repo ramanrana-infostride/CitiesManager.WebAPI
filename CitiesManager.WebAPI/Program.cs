@@ -61,6 +61,7 @@ builder.Services.AddVersionedApiExplorer(options =>
 //Cors : localHost :4200
 builder.Services.AddCors(options =>
 {
+    //Default Cors Policy
     options.AddDefaultPolicy(Policybuilder =>
     {
         Policybuilder
@@ -69,6 +70,7 @@ builder.Services.AddCors(options =>
         .WithMethods("GET", "POST", "PUT", "DELETE");
     });
 
+    //Custom Cors Policy
     options.AddPolicy("4100Client", Policybuilder =>
     {
         Policybuilder
