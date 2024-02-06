@@ -3,7 +3,7 @@ import { City } from '../models/city';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import { Observable } from 'rxjs';
 
-const API_BASE_URL : string = "https://localhost:7277/api/"
+const API_BASE_URL : string = "https://localhost:7277/api"
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +19,7 @@ export class CitiesService {
     let headers = new HttpHeaders();
     headers = headers.append("Authorization","Bearer mytoken");
 
-    return this.httpClient.get<City[]>(`{API_BASE_URL}/v1/cities`,{ headers :headers });
+    return this.httpClient.get<City[]>(`${API_BASE_URL}/v1/cities`,{ headers :headers });
    }
 
    public postCity(city :City): Observable<City> {
@@ -27,8 +27,24 @@ export class CitiesService {
     let headers = new HttpHeaders();
     headers = headers.append("Authorization","Bearer mytoken");
 
-    return this.httpClient.post<City>(`{API_BASE_URL}/v1/cities`,city,{ headers :headers });
+    return this.httpClient.post<City>(`${API_BASE_URL}/v1/cities`,city,{ headers :headers });
    }
+
+  
+
+   public putCity(city: City): Observable<string> {
+    let headers = new HttpHeaders();
+    headers = headers.append("Authorization", "Bearer mytoken");
+
+    return this.httpClient.put<string>(`${API_BASE_URL}/v1/cities/${city.cityId}`, city, { headers: headers })
+  }
+
+  public deleteCity(cityId: string | null): Observable<string> {
+    let headers = new HttpHeaders();
+    headers = headers.append("Authorization", "Bearer mytoken");
+
+    return this.httpClient.delete<string>(`${API_BASE_URL}/v1/Cities?CityId=${cityId}`, { headers: headers })
+  }
 
 }
   
