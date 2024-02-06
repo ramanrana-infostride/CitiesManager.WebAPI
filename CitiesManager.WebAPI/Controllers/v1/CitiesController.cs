@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CitiesManager.WebAPI.DatabaseContext;
-using CitiesManager.WebAPI.Models;
+using CitiesManager.Infrastructure.DatabaseContext;
+using CitiesManager.Core.Models;
 using Microsoft.AspNetCore.Cors;
 
 
@@ -105,9 +105,9 @@ namespace CitiesManager.WebAPI.Controllers.V1
       
         // DELETE: api/Cities/5
         [HttpDelete]
-        public async Task<IActionResult> DeleteCity(Guid id)
+        public async Task<IActionResult> DeleteCity(Guid CityId)
         {
-            var city = await _context.Cities.FindAsync(id);
+            var city = await _context.Cities.FindAsync(CityId);
             if (city == null)
             {
                 return NotFound(); //HTTP 404
@@ -119,9 +119,9 @@ namespace CitiesManager.WebAPI.Controllers.V1
             return NoContent(); //HTTP 200
         }
 
-        private bool CityExists(Guid id)
+        private bool CityExists(Guid CityId)
         {
-            return (_context.Cities?.Any(e => e.CityId == id)).GetValueOrDefault();
+            return (_context.Cities?.Any(e => e.CityId == CityId)).GetValueOrDefault();
         }
     }
 }
