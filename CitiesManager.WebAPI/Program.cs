@@ -23,7 +23,7 @@ builder.Services.AddApiVersioning(config =>
     //config.ApiVersionReader = new QueryStringApiVersionReader(); //Reads version number from request query string called "api-version". Eg: api-version=1.0
 
     //config.ApiVersionReader = new HeaderApiVersionReader("api-version"); 
-    //Reads version number from request header called "api-version". Eg: api-version: 1.0
+//Reads version number from request header called "api-version". Eg: api-version: 1.0
 
     config.DefaultApiVersion = new ApiVersion(1, 0);
     config.AssumeDefaultVersionWhenUnspecified = true;
