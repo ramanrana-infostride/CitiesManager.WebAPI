@@ -83,7 +83,6 @@ namespace CitiesManager.WebAPI.Controllers.V1
                     throw;
                 }
             }
-
             return NoContent();
         }
 
@@ -103,6 +102,7 @@ namespace CitiesManager.WebAPI.Controllers.V1
             return CreatedAtAction("GetCity", new { cityID = city.CityId }, city); //api/Cities/67d28f3d-43eb-49c7-916c-5b39172955e5
         }
 
+      
         // DELETE: api/Cities/5
         [HttpDelete]
         public async Task<IActionResult> DeleteCity(Guid id)

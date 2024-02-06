@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CitiesManager.WebAPI.DatabaseContext;
-using CitiesManager.WebAPI.Models;
 
 
 namespace CitiesManager.WebAPI.Controllers.v2
