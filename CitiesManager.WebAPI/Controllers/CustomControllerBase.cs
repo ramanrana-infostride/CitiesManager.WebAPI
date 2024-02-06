@@ -7,5 +7,6 @@ namespace CitiesManager.WebAPI.Controllers
     [ApiController]
     public class CustomControllerBase : ControllerBase
     {
+
     }
 }
