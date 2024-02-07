@@ -1,4 +1,7 @@
+using CitiesManager.Core.Identity;
 using CitiesManager.Infrastructure.DatabaseContext;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
@@ -81,13 +84,27 @@ builder.Services.AddCors(options =>
 
 });
 
+//Identity
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+{
+    options.Password.RequiredLength = 5;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireDigit = true;
+}).AddEntityFrameworkStores<ApplicationDbContext>()
+   .AddDefaultTokenProviders()
+  .AddUserStore<UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, Guid>>()
+ .AddRoleStore<RoleStore<ApplicationRole, ApplicationDbContext, Guid>>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
 
 app.UseHsts();
 app.UseHttpsRedirection();
-
+app.UseStaticFiles();
 app.UseSwagger(); //creates endpoint for swagger.json
 app.UseSwaggerUI(options =>
 {
@@ -98,6 +115,7 @@ app.UseSwaggerUI(options =>
 app.UseRouting();
 app.UseCors();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
