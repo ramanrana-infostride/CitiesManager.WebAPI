@@ -28,6 +28,8 @@ namespace CitiesManager.WebAPI.Controllers.V1
         /// To get List Of cities including City ID and City Name
         /// </summary>
         /// <returns></returns>
+
+        //This method fetches a list of cities using OrderBy, sorting them alphabetically by their names.
         [HttpGet]
         public async Task<ActionResult<IEnumerable<City>>> GetCities()
         {
@@ -39,7 +41,6 @@ namespace CitiesManager.WebAPI.Controllers.V1
         [HttpGet("{cityID}")]
         public async Task<ActionResult<City>> GetCity(Guid cityId)
         {
-
             var city = await _context.Cities.FirstOrDefaultAsync(temp => temp.CityId == cityId);
 
             if (city == null)
@@ -47,7 +48,6 @@ namespace CitiesManager.WebAPI.Controllers.V1
                 return Problem(detail: "Invalid City Id", statusCode: 400, title: "City Search");
                 // return NotFound();
             }
-
             return city;
         }
 

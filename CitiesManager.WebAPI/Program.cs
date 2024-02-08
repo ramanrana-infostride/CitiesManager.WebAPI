@@ -2,11 +2,11 @@ using CitiesManager.Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
+using static System.Net.WebRequestMethods;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add(new ProducesAttribute("application/json"));
@@ -18,20 +18,17 @@ builder.Services.AddControllers(options =>
 //Enable versioning in Web API controllers
 builder.Services.AddApiVersioning(config =>
 {
-    config.ApiVersionReader = new UrlSegmentApiVersionReader(); //Reads version number from request url at "apiVersion" constraint
-
+    config.ApiVersionReader = new UrlSegmentApiVersionReader(); 
+     //Reads version number from request url at "apiVersion" constraint
     //config.ApiVersionReader = new QueryStringApiVersionReader(); //Reads version number from request query string called "api-version". Eg: api-version=1.0
-
     //config.ApiVersionReader = new HeaderApiVersionReader("api-version"); 
-//Reads version number from request header called "api-version". Eg: api-version: 1.0
+   //Reads version number from request header called "api-version". Eg: api-version: 1.0
 
     config.DefaultApiVersion = new ApiVersion(1, 0);
     config.AssumeDefaultVersionWhenUnspecified = true;
 });
 
-
-
-
+//To Add Db Context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -60,6 +57,7 @@ builder.Services.AddVersionedApiExplorer(options =>
 });
 
 //Cors : localHost :4200
+// CORS configuration
 builder.Services.AddCors(options =>
 {
     //Default Cors Policy
@@ -71,7 +69,7 @@ builder.Services.AddCors(options =>
         .WithMethods("GET", "POST", "PUT", "DELETE");
     });
 
-    //Custom Cors Policy
+    // Custom CORS policy for localhost:4200
     options.AddPolicy("4100Client", Policybuilder =>
     {
         Policybuilder
@@ -86,8 +84,8 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline
 
-app.UseHsts();
-app.UseHttpsRedirection();
+app.UseHsts(); // Enables HTTP Strict Transport Security (HSTS)
+app.UseHttpsRedirection();  // Redirects HTTP requests to HTTPS
 
 app.UseSwagger(); //creates endpoint for swagger.json
 app.UseSwaggerUI(options =>
@@ -96,11 +94,12 @@ app.UseSwaggerUI(options =>
     options.SwaggerEndpoint("/swagger/v2/swagger.json", "2.0");
 }); //creates swagger UI for testing all Web API endpoints / action methods
 
-app.UseRouting();
+app.UseRouting();  // Enables routing
+
 app.UseCors();
 
-app.UseAuthorization();
+app.UseAuthorization();  // Enables authorization
 
-app.MapControllers();
+app.MapControllers(); // Maps controllers
 
-app.Run();
+app.Run();  // Executes the application
