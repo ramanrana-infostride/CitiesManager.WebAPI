@@ -1,3 +1,6 @@
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+
+
 body
 {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -866,6 +869,9 @@ a.button-link:link, a.button-link:visited
     display: inline-block;
   }
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

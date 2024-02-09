@@ -1,0 +1,31 @@
+.header {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-bottom: 2px solid #ddd; 
+    margin-bottom: 30px;
+  }
+  
+  .app-title {
+    margin: 0;
+    color: #333;
+  }
+  
+  .loginButton {
+    background-color: #5d83a9;
+    color: white !important;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 4px;
+  }
+  
+  .loginButton:hover {
+    background-color: #4a6e96;
+  }
+  
+.nav-bar{
+    background-color: rgb(189 190 199);
+}
+
+.loginIcon{
+    margin-left: 88%;
+}

@@ -12,6 +12,7 @@ export class CitiesComponent {
   cities: City[] = [];
   postCityForm: FormGroup;
   isPostCityFormSubmitted: boolean = false;
+  displayedColumns: string[] = ['number', 'cityName', 'actions'];
 
   putCityForm: FormGroup;
   editCityID: string | null = null;

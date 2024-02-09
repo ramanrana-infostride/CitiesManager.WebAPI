@@ -1,0 +1,53 @@
+.edit-button {
+    margin-right: 7px;
+    background-color: #5d83a9; 
+    color: white !important;
+  }
+  
+  .update-button {
+    margin-right: 10px; 
+    background-color: #53af5d;
+    color: white !important;
+  }
+  
+  .delete-button {
+    margin-right: 10px;
+    background-color: #ae2626;
+    color: white !important;
+  }
+
+  .form-container {
+    padding: 40px;
+}
+
+.table-container {
+    overflow-x: auto;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: 13px 10px;
+    text-align: left;
+    font-size: 17px;
+  }
+  
+  .city-name {
+    font-size: 18px;
+  }
+  
+  .city-row:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .edit-button, .update-button, .delete-button {
+    color: #757575;
+    font-size: 16px; 
+}
+
+.edit-button:hover, .update-button:hover, .delete-button:hover {
+    color: #333;
+}
