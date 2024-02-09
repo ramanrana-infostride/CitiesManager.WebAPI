@@ -1,3 +1,5 @@
+import { Router } from '@angular/router';
+import { AccountService } from './services/account.service';
 import { Component } from '@angular/core';
 
 @Component({
@@ -7,4 +9,21 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   
+  constructor(public accountService : AccountService,private router : Router){
+  }
+  onLogOutClicked() {
+    this.accountService.getLogout().subscribe({
+      next: (response: string) => {
+        this.accountService.currentUserName = null;
+
+        this.router.navigate([ '/login' ]);
+      },
+
+      error: (error) => {
+        console.log(error);
+      },
+
+      complete: () => { },
+    });
+  }
 }

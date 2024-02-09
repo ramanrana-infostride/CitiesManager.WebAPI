@@ -6,6 +6,8 @@ import { CitiesComponent } from './cities/cities.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DisableControlDirective } from './directives/disable-control.directive';
+import { RegisterComponent } from './register/register.component';
+import { LoginComponent } from './login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatButtonModule} from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -18,6 +20,9 @@ import {MatToolbarModule} from '@angular/material/toolbar';
   declarations: [
     AppComponent,
     CitiesComponent,
+    DisableControlDirective,
+    RegisterComponent,
+    LoginComponent
     DisableControlDirective,
   ],
   imports: [

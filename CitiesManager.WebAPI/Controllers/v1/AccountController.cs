@@ -7,20 +7,34 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CitiesManager.WebAPI.Controllers.v1
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [AllowAnonymous]
+    [ApiVersion("1.0")]
     public class AccountController : CustomControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userManager"></param>
+        /// <param name="signInManager"></param>
+        /// <param name="roleManager"></param>
         public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager)
         {
             _signInManager = signInManager;
             _roleManager = roleManager;
             _userManager = userManager;
         }
-
-        [HttpPost]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="registerDTO"></param>
+        /// <returns></returns>
+        [HttpPost("register")]
         public async Task<ActionResult<ApplicationUser>> PostRegister(RegisterDTO registerDTO)
 
         {
@@ -65,6 +79,41 @@ namespace CitiesManager.WebAPI.Controllers.v1
             }
 
 
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<ApplicationUser>> PostLogin(LoginDTO loginDTO)
+        {
+            //Validation
+            if (ModelState.IsValid == false)
+            {
+                String errorMessage = String.Join("|", ModelState.Values.SelectMany(v => v.Errors.Select(x => x.ErrorMessage)));
+                return Problem(errorMessage);
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(loginDTO.Email, loginDTO.Password, isPersistent: false, lockoutOnFailure: false);
+            if (result.Succeeded)
+            {
+                ApplicationUser? user = await _userManager.FindByEmailAsync(loginDTO.Email);
+                if (user == null) { return NoContent(); }
+                return Ok(new { personName = user.PersonName, email = user.Email });
+
+            }
+            else
+            {
+                return Problem("Invalid name or password");
+            }
+
+        }
+
+
+        [HttpGet("logout")]
+        public async Task<IActionResult> GetLogout()
+
+        {
+            await _signInManager.SignOutAsync();
+
+            return NoContent();
         }
 
 

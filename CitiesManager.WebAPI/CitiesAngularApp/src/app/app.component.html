@@ -1,18 +1,40 @@
 <div class="container">
   <div class="page-content">
 
-    <mat-toolbar class="nav-bar">
-      <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
-        <mat-icon>menu</mat-icon>
-      </button>
-      <span>Cities Manager</span>
-      <div class="loginIcon">
-        <button mat-icon-button aria-label="Login">
-          <mat-icon>account_circle</mat-icon>
-        </button>    
-      </div>  
-    </mat-toolbar>
-    
+    <div class="margin-bottom">
+      <div class="flex">
+
+        <div class="flex-1" id="top-bar-div">
+          <h2 class="app-title">
+            Cities Manager
+          </h2>
+        </div>
+
+        <div class="flex-1" id="search-box-div">
+          <div class="navbar account-links">
+
+            <ul *ngIf="accountService.currentUserName === '' || accountService.currentUserName === null || accountService.currentUserName === undefined">
+              <li>
+                <a [routerLink]="[ '/login' ]">Login</a>
+              </li>
+
+              <li>
+                <a [routerLink]="[ '/register' ]">Register</a>
+              </li>
+            </ul>
+
+            <ul *ngIf="accountService.currentUserName !== '' && accountService.currentUserName !== null && accountService.currentUserName !== undefined">
+              <li>
+                <a href="#" onclick="return false" (click)="onLogOutClicked()">Logout</a>
+              </li>
+            </ul>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+
     <div class="navbar mb">
       <ul>
         <li>
