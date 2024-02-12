@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { LoginUser } from '../models/login-user';
 
 const API_BASE_URL  = "https://localhost:7277/api/v1/account/"
-@Injectable({
+@Injectable({ 
   providedIn: 'root'
 })
 export class AccountService {
@@ -15,14 +15,14 @@ export class AccountService {
   constructor(private httpClient :HttpClient) { }
 
   //Service For Registering User
-    public postRegister(registerUser : RegisterUser) : Observable <RegisterUser>
+    public postRegister(registerUser : RegisterUser) : Observable <any>
     {
       return this.httpClient.post<RegisterUser>(`${API_BASE_URL}register`,registerUser);
     }
 
-    public postLogin(loginUser : LoginUser) : Observable <LoginUser>
+    public postLogin(loginUser : LoginUser) : Observable <any>
     {
-      return this.httpClient.post<LoginUser>(`${API_BASE_URL}login`,loginUser);
+      return this.httpClient.post<any>(`${API_BASE_URL}login`,loginUser);
     }
 
 

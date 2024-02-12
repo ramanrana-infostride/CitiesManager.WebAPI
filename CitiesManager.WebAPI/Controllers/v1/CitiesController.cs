@@ -8,10 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using CitiesManager.Infrastructure.DatabaseContext;
 using CitiesManager.Core.Models;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace CitiesManager.WebAPI.Controllers.V1
 {
+    [Authorize]
     [ApiVersion("1.0")]
     //   [EnableCors("4100Client")]
     public class CitiesController : CustomControllerBase
