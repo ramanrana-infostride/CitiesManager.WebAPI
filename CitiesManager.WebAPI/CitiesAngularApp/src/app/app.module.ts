@@ -22,7 +22,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     CitiesComponent,
     DisableControlDirective,
     RegisterComponent,
-    LoginComponent
+    LoginComponent,
     DisableControlDirective,
   ],
   imports: [
