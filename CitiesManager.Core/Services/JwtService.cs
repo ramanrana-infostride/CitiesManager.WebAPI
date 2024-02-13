@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 
@@ -28,9 +29,10 @@ namespace CitiesManager.Core.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub,user.Id.ToString()),//Subject User Id
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),//Unique JWtID
-                new Claim(JwtRegisteredClaimNames.Iat,DateTime.UtcNow.ToString()),//Issued at (date and time of token generation)
+                   new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()), //Issued at (date and time of token generation)
                 new Claim(ClaimTypes.NameIdentifier,user.Email.ToString()),
                 new Claim(ClaimTypes.NameIdentifier,user.PersonName.ToString()),
+                new Claim(ClaimTypes.Email,user.Email),
 
             };
 
@@ -52,7 +54,52 @@ namespace CitiesManager.Core.Services
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             string token = tokenHandler.WriteToken(tokenGenerator);
 
-            return new AuthenticationResponse() { Token = token, PersonName = user.PersonName, Email = user.Email, Expiration = expiration };
+            return new AuthenticationResponse()
+            {
+                Token = token,
+                PersonName = user.PersonName,
+                Email = user.Email,
+                Expiration = expiration,
+                RefreshToken = GenerateRefreshToken(),
+                RefreshTokenExpirationDateTime = DateTime.Now.AddMinutes(Convert.ToInt32(_configuration["RefreshToken:EXPIRATION_MINUTES"]))
+            };
         }
+
+        public ClaimsPrincipal? GetPrincipalFromJwtToken(string? token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters()
+            {
+                ValidateAudience = true,
+                ValidAudience = _configuration["Jwt:Audience"],
+                ValidateIssuer = true,
+                ValidIssuer = _configuration["Jwt:Issuer"],
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
+                ValidateLifetime = false,//should be False
+
+
+            };
+
+            JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+
+            ClaimsPrincipal principal = jwtSecurityTokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+
+            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid token");
+            }
+            return principal;
+        }
+
+        private string GenerateRefreshToken()
+        {
+
+            byte[] bytes = new byte[64];
+            var randomNumberGenerator = RandomNumberGenerator.Create();
+            randomNumberGenerator.GetBytes(bytes);
+            return Convert.ToBase64String(bytes);
+        }
+
+
     }
 }

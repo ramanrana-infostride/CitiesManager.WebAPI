@@ -62,6 +62,7 @@ export class RegisterComponent {
            console.log(response); 
            this.isRegisterFormSubmitted = false;
            localStorage["token"] = response.token;
+           localStorage["refreshToken"] = response.refreshToken;
            this.router.navigate(['/cities']);
            this.registerForm.reset();
           },

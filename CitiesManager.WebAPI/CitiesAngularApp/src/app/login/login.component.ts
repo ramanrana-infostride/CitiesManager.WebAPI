@@ -46,7 +46,8 @@ export class LoginComponent {
            console.log(response); 
            this.isLoginFormSubmitted = false;
            this.accountService.currentUserName = response.email;
-           localStorage["token"] = response.token
+           localStorage["token"] = response.token;
+           localStorage["refreshToken"] = response.refreshToken;
            this.router.navigate(['/cities']);
            this.loginForm.reset();
           },

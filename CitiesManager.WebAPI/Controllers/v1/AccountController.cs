@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CitiesManager.WebAPI.Controllers.v1
 {
@@ -74,6 +75,10 @@ namespace CitiesManager.WebAPI.Controllers.v1
                 //sign -in 
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 var authenticationResponse = _jwtService.CreateJwtToken(user);
+                user.RefreshToken = authenticationResponse.RefreshToken;
+                user.RefreshTokenExpirationDateTime = authenticationResponse.RefreshTokenExpirationDateTime;
+                await _userManager.UpdateAsync(user);
+
                 return Ok(authenticationResponse);
             }
             else
@@ -101,6 +106,9 @@ namespace CitiesManager.WebAPI.Controllers.v1
                 ApplicationUser? user = await _userManager.FindByEmailAsync(loginDTO.Email);
                 if (user == null) { return NoContent(); }
                 var authenticationResponse = _jwtService.CreateJwtToken(user);
+                user.RefreshToken = authenticationResponse.RefreshToken;
+                user.RefreshTokenExpirationDateTime = authenticationResponse.RefreshTokenExpirationDateTime;
+                await _userManager.UpdateAsync(user);
                 return Ok(authenticationResponse);
 
 
@@ -122,7 +130,36 @@ namespace CitiesManager.WebAPI.Controllers.v1
             return NoContent();
         }
 
+        [HttpPost("generate-new-jwt-token")]
+        public async Task<IActionResult> GenerateNewAccessToken(TokenModel tokenModel)
+        {
+            if (tokenModel == null)
+            {
+                return BadRequest("Invalid Client Request");
+            }
 
+            string? jwtToken = tokenModel.Token;
+            string? refreshToken = tokenModel.RefreshToken;
+
+            ClaimsPrincipal? principal = _jwtService.GetPrincipalFromJwtToken(tokenModel.Token);
+
+            if (principal == null) { return BadRequest("Invalid Jwt access Token"); };
+
+            string? email = principal.FindFirstValue(ClaimTypes.Email);
+
+            ApplicationUser? user = await _userManager.FindByNameAsync(email);
+
+            if (user == null || user.RefreshToken != tokenModel.RefreshToken || user.RefreshTokenExpirationDateTime <= DateTime.Now) { return BadRequest("Invalid Refresh Token"); }
+
+            AuthenticationResponse authenticationResponse = _jwtService.CreateJwtToken(user);
+
+            user.RefreshToken = authenticationResponse.RefreshToken;
+            user.RefreshTokenExpirationDateTime = authenticationResponse.RefreshTokenExpirationDateTime;
+
+            await _userManager.UpdateAsync(user);
+
+            return Ok(authenticationResponse);
+        }
 
     }
 }
