@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CitiesManager.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240212130519_RefreshTokenExpiryDate")]
-    partial class RefreshTokenExpiryDate
+    [Migration("20240220115022_Iintial")]
+    partial class Iintial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,6 +51,26 @@ namespace CitiesManager.Infrastructure.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("433e4f6a-3d5e-464a-83a1-1b23607f94db"),
+                            Name = "Administrator",
+                            NormalizedName = "ADMINISTRATOR"
+                        },
+                        new
+                        {
+                            Id = new Guid("7d6a3a8c-3759-4bfe-a27a-6a46dc7732ed"),
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = new Guid("f913a30a-0b62-4a3f-9fde-35b4b1fcfb64"),
+                            Name = "Manager",
+                            NormalizedName = "MANAGER"
+                        });
                 });
 
             modelBuilder.Entity("CitiesManager.Core.Identity.ApplicationUser", b =>
@@ -141,18 +161,6 @@ namespace CitiesManager.Infrastructure.Migrations
                     b.HasKey("CityId");
 
                     b.ToTable("Cities");
-
-                    b.HasData(
-                        new
-                        {
-                            CityId = new Guid("5458405b-0da0-4e1c-8dcc-ef07a7c33d83"),
-                            CityName = "Mohali"
-                        },
-                        new
-                        {
-                            CityId = new Guid("5458405b-0da0-4e1c-8dcc-ef07a7c33d84"),
-                            CityName = "Chandigarh"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

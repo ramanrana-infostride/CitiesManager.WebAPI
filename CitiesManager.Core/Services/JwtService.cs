@@ -1,6 +1,7 @@
 ﻿using CitiesManager.Core.DTO;
 using CitiesManager.Core.Identity;
 using CitiesManager.Core.ServiceContracts;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -15,26 +16,31 @@ namespace CitiesManager.Core.Services
     public class JwtService : IJwtService
     {
         private readonly IConfiguration _configuration;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public JwtService(IConfiguration configuration)
+        public JwtService(IConfiguration configuration, UserManager<ApplicationUser> userManager)
         {
             _configuration = configuration;
+            _userManager = userManager;
         }
 
         public AuthenticationResponse CreateJwtToken(ApplicationUser user)
         {
             DateTime expiration = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["Jwt:EXPIRATION_MINUTES"]));
 
+            var roles = _userManager.GetRolesAsync(user).Result;
+
             Claim[] claims = new Claim[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub,user.Id.ToString()),//Subject User Id
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),//Unique JWtID
-                   new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()), //Issued at (date and time of token generation)
+                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()), //Issued at (date and time of token generation)
                 new Claim(ClaimTypes.NameIdentifier,user.Email.ToString()),
                 new Claim(ClaimTypes.NameIdentifier,user.PersonName.ToString()),
                 new Claim(ClaimTypes.Email,user.Email),
 
             };
+            claims = claims.Concat(roles.Select(role => new Claim(ClaimTypes.Role, role))).ToArray();
 
             SymmetricSecurityKey securityKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_configuration["Jwt:key"])

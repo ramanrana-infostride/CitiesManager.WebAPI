@@ -158,7 +158,9 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-
+    options.AddPolicy("Administrator", policy => policy.RequireRole("Administrator"));
+    options.AddPolicy("User", policy => policy.RequireRole("User"));
+    options.AddPolicy("Manager", policy => policy.RequireRole("Manager"));
 });
 
 var app = builder.Build();
