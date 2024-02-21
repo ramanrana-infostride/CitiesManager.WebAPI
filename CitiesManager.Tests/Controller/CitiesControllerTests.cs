@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CitiesManager.Core.Models;
 using CitiesManager.Infrastructure.DatabaseContext;
 using CitiesManager.WebAPI.Controllers.V1;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -61,11 +62,9 @@ namespace CitiesManager.Tests.Controllers
             // Act
             using (var context = new ApplicationDbContext(_context))
             {
-                // To Check if the city already exists in the database
                 var existingCity = await context.Cities.FirstOrDefaultAsync(c => c.CityName == cityName);
                 if (existingCity == null)
                 {
-                    // Add the city only if it doesn't already exist
                     var controller = new CitiesController(context);
                     var result = await controller.PostCity(city);
 
@@ -97,7 +96,7 @@ namespace CitiesManager.Tests.Controllers
         [Fact]
         public async Task GetCities_EmptyList()
         {
-            // Arrange: Define the expected list of cities
+            // Arrange
             var expectedCities = new List<City>();
 
             // Act
@@ -110,10 +109,8 @@ namespace CitiesManager.Tests.Controllers
                 var actionResult = Assert.IsType<ActionResult<IEnumerable<City>>>(result);
                 var cities = Assert.IsAssignableFrom<IEnumerable<City>>(actionResult.Value);
 
-                // Check if the returned list contains only the expected cities
                 foreach (var city in cities)
                 {
-                    // Verify if the city is not present in the expected list
                     Assert.DoesNotContain(city, expectedCities);
                 }
             }
@@ -168,43 +165,132 @@ namespace CitiesManager.Tests.Controllers
         #region PutCity
 
         [Fact]
-        public async Task PutCity_ExistingCity_UpdatesCityName()
+        public async Task PutCity_UpdatesCityName()
         {
             // Arrange
             var cityId = Guid.NewGuid();
-            var originalCityName = "Test City";
+            var originalCityName = "Old City";
             var updatedCityName = "Updated City";
 
-            // Check if the city already exists in the database
             using (var context = new ApplicationDbContext(_context))
             {
-                var existingCity = await context.Cities.FindAsync(cityId);
-                if (existingCity == null)
-                {
-                    // Add the original city to the database
-                    var city = new City { CityId = cityId, CityName = originalCityName };
-                    context.Cities.Add(city);
-                    await context.SaveChangesAsync();
-                }
+                var city = new City { CityId = cityId, CityName = originalCityName };
+                context.Cities.Add(city);
+                await context.SaveChangesAsync();
             }
-
-            // Update the city name
-            var updatedCity = new City { CityId = cityId, CityName = updatedCityName };
 
             // Act
             using (var context = new ApplicationDbContext(_context))
             {
                 var controller = new CitiesController(context);
-                var result = await controller.PutCity(cityId, updatedCity);
+
+                // Assert
+                var existingCity = await context.Cities.FindAsync(cityId);
+                Assert.NotNull(existingCity);
+                var result = await controller.PutCity(cityId, new City { CityId = cityId, CityName = updatedCityName });
 
                 // Assert
                 Assert.IsType<NoContentResult>(result);
-
-                // Verify that the city name has been updated in the database
                 var updatedCityFromDb = await context.Cities.FindAsync(cityId);
                 Assert.Equal(updatedCityName, updatedCityFromDb.CityName);
             }
         }
+
+
+
+        #endregion
+
+
+        #region DeleteCity
+
+        // If CityId is valid , returns NoContentResult
+        [Fact]
+        public async Task DeleteCity_RemoveValidCity()
+        {
+            // Arrange
+            var cityIdToDelete = Guid.NewGuid();
+            var cityToAdd = new City { CityId = cityIdToDelete, CityName = "Delete City" };
+
+            using (var context = new ApplicationDbContext(_context))
+            {
+                context.Cities.Add(cityToAdd);
+                await context.SaveChangesAsync();
+            }
+
+            // Act
+            using (var context = new ApplicationDbContext(_context))
+            {
+                var controller = new CitiesController(context);
+                var result = await controller.DeleteCity(cityIdToDelete);
+
+                // Assert
+                var actionResult = Assert.IsType<NoContentResult>(result);
+                using (var dbContext = new ApplicationDbContext(_context))
+                {
+                    Assert.Null(await dbContext.Cities.FindAsync(cityIdToDelete)); 
+                }
+            }
+        }
+
+        // If CityId in invalid, it should return NotFound
+        [Fact]
+        public async Task DeleteCity_InvalidCityId()
+        {
+            var invalidCityId = Guid.NewGuid();
+
+            // Act
+            using (var context = new ApplicationDbContext(_context))
+            {
+                var controller = new CitiesController(context);
+                var result = await controller.DeleteCity(invalidCityId);
+
+                // Assert
+                Assert.IsType<NotFoundResult>(result);
+            }
+        }
+
+        #endregion
+
+        #region GetCityById
+
+        [Fact]
+        public async Task GetCityById_CityById()
+        {
+            // Arrange
+            var cityId = Guid.NewGuid();
+            var cityName = "Hyderabad";
+
+            using (var context = new ApplicationDbContext(_context))
+            {
+                var city = new City { CityId = cityId, CityName = cityName };
+                context.Cities.Add(city);
+                await context.SaveChangesAsync();
+            }
+
+            // Act
+            using (var context = new ApplicationDbContext(_context))
+            {
+                var controller = new CitiesController(context);
+                var result = await controller.GetCity(cityId);
+
+                // Assert
+                var city = Assert.IsType<City>(result.Value);
+                Assert.Equal(cityName, city.CityName);
+                Assert.Equal(cityId, city.CityId);
+            }
+
+            // Clean up the database after the test
+            using (var context = new ApplicationDbContext(_context))
+            {
+                var cityToRemove = await context.Cities.FindAsync(cityId);
+                if (cityToRemove != null)
+                {
+                    context.Cities.Remove(cityToRemove);
+                    await context.SaveChangesAsync();
+                }
+            }
+        }
+
 
         #endregion
 
