@@ -1,7 +1,10 @@
+using CitiesManager.Core.DTO.Validators;
+using CitiesManager.Core.DTO;
 using CitiesManager.Core.Identity;
 using CitiesManager.Core.ServiceContracts;
 using CitiesManager.Core.Services;
 using CitiesManager.Infrastructure.DatabaseContext;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -31,6 +34,11 @@ builder.Services.AddControllers(options =>
 
 //Adding the Jwt services 
 builder.Services.AddTransient<IJwtService, JwtService>();
+
+builder.Services.AddTransient<IPersonService, PersonService>();
+
+// Registering PersonDTOValidator
+builder.Services.AddTransient<IValidator<PersonDTO>, PersonDTOValidator>();
 
 
 //Enable versioning in Web API controllers

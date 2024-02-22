@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CitiesManager.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240220115022_Iintial")]
-    partial class Iintial
+    [Migration("20240222140534_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,31 @@ namespace CitiesManager.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("CitiesManager.Core.Entities.Person", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PhoneNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Persons");
+                });
 
             modelBuilder.Entity("CitiesManager.Core.Identity.ApplicationRole", b =>
                 {
@@ -55,19 +80,19 @@ namespace CitiesManager.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("433e4f6a-3d5e-464a-83a1-1b23607f94db"),
+                            Id = new Guid("855f309f-44be-4882-a39c-d502ecfeca79"),
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = new Guid("7d6a3a8c-3759-4bfe-a27a-6a46dc7732ed"),
+                            Id = new Guid("4502277e-5a18-42e3-8b3a-e64a0f8c00f1"),
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = new Guid("f913a30a-0b62-4a3f-9fde-35b4b1fcfb64"),
+                            Id = new Guid("55e27b27-204e-4245-ae26-5667c2c2c2a0"),
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         });
