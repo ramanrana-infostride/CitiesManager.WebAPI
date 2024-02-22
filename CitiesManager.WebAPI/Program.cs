@@ -158,6 +158,20 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization(options =>
 {
+    options.AddPolicy("Administrator", policy => policy.RequireRole("Administrator"));
+    //  options.AddPolicy("User", policy => policy.RequireRole("User"));
+    //    options.AddPolicy("Manager", policy => policy.RequireRole("Manager"));
+
+    options.AddPolicy("ManagerAccess", policy =>
+        policy.RequireAssertion(context =>
+                    context.User.IsInRole("Administrator")
+                    || context.User.IsInRole("Manager")));
+
+    options.AddPolicy("UserAccess", policy =>
+        policy.RequireAssertion(context =>
+
+                     context.User.IsInRole("Manager")
+                    || context.User.IsInRole("User")));
 
 });
 

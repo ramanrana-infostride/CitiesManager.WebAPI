@@ -16,21 +16,37 @@ namespace CitiesManager.Infrastructure.DatabaseContext
 
         public virtual DbSet<City> Cities { get; set; }
 
+
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<City>().HasData(new City()
+            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole()
             {
-                CityId = Guid.Parse("5458405B-0DA0-4E1C-8DCC-EF07A7C33D83"),
-                CityName = "Mohali"
+                Id = Guid.NewGuid(),
+                Name = "Administrator",
+                NormalizedName = "ADMINISTRATOR"
             });
 
-            modelBuilder.Entity<City>().HasData(new City()
+            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole()
             {
-                CityId = Guid.Parse("5458405B-0DA0-4E1C-8DCC-EF07A7C33D84"),
-                CityName = "Chandigarh"
+                Id = Guid.NewGuid(),
+                Name = "User",
+                NormalizedName = "USER"
             });
+
+            modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Manager",
+                NormalizedName = "MANAGER"
+            });
+
+
+
+
         }
     }
 }

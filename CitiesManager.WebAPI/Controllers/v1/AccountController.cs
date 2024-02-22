@@ -72,12 +72,17 @@ namespace CitiesManager.WebAPI.Controllers.v1
 
             if (result.Succeeded)
             {
+                await _userManager.AddToRolesAsync(user, new[] { "User" });
+
                 //sign -in 
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 var authenticationResponse = _jwtService.CreateJwtToken(user);
+
                 user.RefreshToken = authenticationResponse.RefreshToken;
                 user.RefreshTokenExpirationDateTime = authenticationResponse.RefreshTokenExpirationDateTime;
                 await _userManager.UpdateAsync(user);
+
+
 
                 return Ok(authenticationResponse);
             }

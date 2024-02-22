@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CitiesManager.WebAPI.Controllers.v1
 {
-    [Authorize]
+    [Authorize(Roles = "User")]
     [ApiVersion("1.0")]
     public class AdminController : CustomControllerBase
 
