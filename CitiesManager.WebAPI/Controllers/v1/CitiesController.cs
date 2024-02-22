@@ -95,6 +95,10 @@ namespace CitiesManager.WebAPI.Controllers.V1
         [HttpPost]
         public async Task<ActionResult<City>> PostCity([Bind(nameof(City.CityId), nameof(City.CityName))] City city)
         {
+            if (city.CityName == null)
+            {
+                throw new ArgumentNullException(nameof(city.CityName), "City name cannot be null.");
+            }
             if (_context.Cities == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Cities'  is null.");
