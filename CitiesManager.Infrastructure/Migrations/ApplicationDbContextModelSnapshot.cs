@@ -39,8 +39,8 @@ namespace CitiesManager.Infrastructure.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PhoneNumber")
-                        .HasColumnType("int");
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -77,19 +77,19 @@ namespace CitiesManager.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("855f309f-44be-4882-a39c-d502ecfeca79"),
+                            Id = new Guid("75161ee7-c6f3-4494-9def-f2f3211bea61"),
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = new Guid("4502277e-5a18-42e3-8b3a-e64a0f8c00f1"),
+                            Id = new Guid("db8ff118-6c1d-4b75-875b-9469597820a8"),
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = new Guid("55e27b27-204e-4245-ae26-5667c2c2c2a0"),
+                            Id = new Guid("822c2e3a-fc42-42fe-aac4-a5c52524e526"),
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         });

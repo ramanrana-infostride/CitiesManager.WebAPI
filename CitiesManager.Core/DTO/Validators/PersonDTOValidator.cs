@@ -24,12 +24,10 @@ namespace CitiesManager.Core.DTO.Validators
                 .InclusiveBetween(18, 60);
 
             RuleFor(x => x.PhoneNumber)
-                 .NotEmpty()
-                 .Length(10)
-                 .Must(phoneNumber => phoneNumber.All(char.IsDigit))
-                 .WithMessage("Phone number must be exactly 10 digits.");
-
-
+                .NotEmpty()
+                .Length(10)
+                .Must(phoneNumber => phoneNumber.All(char.IsDigit))
+                .WithMessage("Enter a valid 10 digit phone number.");
         }
     }
 }

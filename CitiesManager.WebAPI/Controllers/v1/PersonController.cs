@@ -40,5 +40,76 @@ namespace CitiesManager.WebAPI.Controllers
 
             return Ok(entity);
         }
+
+        [HttpGet("get-all-persons")]
+        public async Task<IActionResult> GetAllPersons()
+        {
+            var persons = await _personService.GetAllPersons();
+
+            if (persons == null || !persons.Any())
+            {
+                return NotFound("No persons found.");
+            }
+
+            return Ok(persons);
+        }
+
+        [HttpGet("get-person/{id}")]
+        public async Task<IActionResult> GetPerson(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest("Invalid person ID.");
+            }
+
+            var person = await _personService.GetPersonById(id);
+
+            if (person == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(person);
+        }
+
+        [HttpPut("update-person/{id}")]
+        public async Task<IActionResult> UpdatePerson(int id, PersonDTO updatedPerson)
+        {
+            if (id <= 0)
+            {
+                return BadRequest("Invalid person ID.");
+            }
+
+            var validationResult = await _validator.ValidateAsync(updatedPerson);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
+            var entity = await _personService.UpdatePerson(id, updatedPerson);
+
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(entity);
+        }
+
+        [HttpDelete("delete-person/{id}")]
+        public async Task<IActionResult> DeletePerson(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest("Invalid person ID.");
+            }
+
+            await _personService.DeletePerson(id);
+
+            return NoContent();
+        }
+
+
     }
 }
