@@ -29,6 +29,7 @@ namespace CitiesManager.Core.DTO
         [Compare("Password", ErrorMessage = "Confirm Password and password do not match")]
 
         public string? ConfirmPassword { get; set; } = string.Empty;
+        public string? Role { get; set; } = string.Empty;
 
 
     }

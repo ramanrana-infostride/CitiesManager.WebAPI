@@ -1,4 +1,5 @@
 using CitiesManager.Core.Identity;
+using CitiesManager.Core.Models;
 using CitiesManager.Core.ServiceContracts;
 using CitiesManager.Core.Services;
 using CitiesManager.Infrastructure.DatabaseContext;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,16 +33,19 @@ builder.Services.AddControllers(options =>
 
 //Adding the Jwt services 
 builder.Services.AddTransient<IJwtService, JwtService>();
+builder.Services.AddTransient<IEmailServices, EmailServices>();
+
 
 
 //Enable versioning in Web API controllers
 builder.Services.AddApiVersioning(config =>
 {
-    config.ApiVersionReader = new UrlSegmentApiVersionReader(); //Reads version number from request url at "apiVersion" constraint
-
-    //config.ApiVersionReader = new QueryStringApiVersionReader(); //Reads version number from request query string called "api-version". Eg: api-version=1.0
-
-    //config.ApiVersionReader = new HeaderApiVersionReader("api-version"); //Reads version number from request header called "api-version". Eg: api-version: 1.0
+    config.ApiVersionReader = new UrlSegmentApiVersionReader();
+    //Reads version number from request url at "apiVersion" constraint
+    //config.ApiVersionReader = new QueryStringApiVersionReader();
+    //Reads version number from request query string called "API-version". EG:API-version=1.0
+    //config.ApiVersionReader = new HeaderApiVersionReader("API-version"); 
+    //Reads version number from request header called "API-version". EG: API-version: 1.0
 
     config.DefaultApiVersion = new ApiVersion(1, 0);
     config.AssumeDefaultVersionWhenUnspecified = true;
@@ -97,10 +102,10 @@ builder.Services.AddVersionedApiExplorer(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 
-//Cors : localHost :4200
+//CORS : localHost :4200
 builder.Services.AddCors(options =>
 {
-    //Default Cors Policy
+    //Default CORS Policy
     options.AddDefaultPolicy(Policybuilder =>
     {
         Policybuilder
@@ -109,7 +114,7 @@ builder.Services.AddCors(options =>
         .WithMethods("GET", "POST", "PUT", "DELETE");
     });
 
-    //Custom Cors Policy
+    //Custom CORS Policy
     options.AddPolicy("4100Client", Policybuilder =>
     {
         Policybuilder
@@ -128,10 +133,12 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequireLowercase = true;
     options.Password.RequireDigit = true;
+    options.SignIn.RequireConfirmedEmail = true;
+    options.Tokens.EmailConfirmationTokenProvider = "Email";
 }).AddEntityFrameworkStores<ApplicationDbContext>()
    .AddDefaultTokenProviders()
-  .AddUserStore<UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, Guid>>()
- .AddRoleStore<RoleStore<ApplicationRole, ApplicationDbContext, Guid>>();
+   .AddUserStore<UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, Guid>>()
+   .AddRoleStore<RoleStore<ApplicationRole, ApplicationDbContext, Guid>>();
 
 
 
@@ -154,6 +161,8 @@ builder.Services.AddAuthentication(options =>
 
     };
 });
+
+
 
 
 builder.Services.AddAuthorization(options =>

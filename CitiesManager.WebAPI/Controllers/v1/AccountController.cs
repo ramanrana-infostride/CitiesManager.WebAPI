@@ -1,11 +1,15 @@
-﻿using CitiesManager.Core.DTO;
+﻿using Azure;
+using CitiesManager.Core.DTO;
 using CitiesManager.Core.Identity;
+using CitiesManager.Core.Models;
 using CitiesManager.Core.ServiceContracts;
 using CitiesManager.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit;
+using NuGet.Common;
 using System.Security.Claims;
 
 namespace CitiesManager.WebAPI.Controllers.v1
@@ -21,18 +25,21 @@ namespace CitiesManager.WebAPI.Controllers.v1
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IJwtService _jwtService;
+        private readonly IEmailServices _emailservice;
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="userManager"></param>
         /// <param name="signInManager"></param>
         /// <param name="roleManager"></param>
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager, IJwtService jwtService)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager, IJwtService jwtService, IEmailServices emailservice)
         {
             _signInManager = signInManager;
             _roleManager = roleManager;
             _userManager = userManager;
             _jwtService = jwtService;
+            _emailservice = emailservice;
         }
         /// <summary>
         /// 
@@ -65,13 +72,23 @@ namespace CitiesManager.WebAPI.Controllers.v1
                 Email = registerDTO.Email,
                 PhoneNumber = registerDTO.PhoneNumber,
                 UserName = registerDTO.Email,
-                PersonName = registerDTO.PersonName
+                PersonName = registerDTO.PersonName,
+                EmailConfirmed = false,
+                TwoFactorEnabled = true,
             };
 
             IdentityResult result = await _userManager.CreateAsync(user, registerDTO.Password);
 
             if (result.Succeeded)
             {
+
+
+                var verificationLink = Url.Action("VerifyEmail", "Account", new { userId = user.Id }, Request.Scheme);
+
+                // Send verification email
+                await SendVerificationEmailAsync(user.Email, verificationLink);
+
+
                 await _userManager.AddToRolesAsync(user, new[] { "User" });
 
                 //sign -in 
@@ -95,6 +112,69 @@ namespace CitiesManager.WebAPI.Controllers.v1
 
         }
 
+
+        [HttpGet("VerifyEmail")]
+        public async Task<IActionResult> VerifyEmail([FromQuery] string userId)
+        {
+            if (userId == null)
+            {
+                return BadRequest("Invalid token or user ID");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+
+                return BadRequest("User not found");
+            }
+
+            if (user.EmailConfirmed == true)
+            {
+
+                return BadRequest("User Already Verified");
+            }
+            user.EmailConfirmed = true;
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                return Ok("Email verification successful");
+            }
+            else
+            {
+                // Handle the case where updating the user fails
+                return Problem("Failed to verify email");
+            }
+
+        }
+
+
+
+
+
+        [HttpPost]
+        public IActionResult SendEmail(EmailDto request)
+        {
+            _emailservice.SendEmail(request);
+
+            return Ok();
+        }
+
+        private async Task SendVerificationEmailAsync(string userEmail, string verificationLink)
+        {
+            var emailDto = new EmailDto
+            {
+                To = userEmail,
+                Subject = "Verify your email address",
+                Body = $"<p>Thank you for registering with Your Application. Please verify your email address by clicking the following link:</p><p><a href='{verificationLink}'>Verify Email</a></p>"
+            };
+
+            _emailservice.SendEmail(emailDto);
+        }
+
+
+
         [HttpPost("login")]
         public async Task<ActionResult<ApplicationUser>> PostLogin(LoginDTO loginDTO)
         {
@@ -106,10 +186,33 @@ namespace CitiesManager.WebAPI.Controllers.v1
             }
 
             var result = await _signInManager.PasswordSignInAsync(loginDTO.Email, loginDTO.Password, isPersistent: false, lockoutOnFailure: false);
+            /*     ApplicationUser? user = await _userManager.FindByEmailAsync(loginDTO.Email);
+                 if (user.TwoFactorEnabled == true)
+                 {
+
+                     var token = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+
+                     var email = new EmailDto
+                     {
+                         To = user.Email,
+                         Subject = "Otp to Login",
+                         Body = $"<p>{token}</p>"
+                     };
+
+                     _emailservice.SendEmail(email);
+
+                     return Ok($"We have shared an OTP to your Email {user.Email}");
+                 }*/
             if (result.Succeeded)
             {
                 ApplicationUser? user = await _userManager.FindByEmailAsync(loginDTO.Email);
-                if (user == null) { return NoContent(); }
+                if (user == null)
+                {
+                    return NoContent();
+                }
+
+
+
                 var authenticationResponse = _jwtService.CreateJwtToken(user);
                 user.RefreshToken = authenticationResponse.RefreshToken;
                 user.RefreshTokenExpirationDateTime = authenticationResponse.RefreshTokenExpirationDateTime;
@@ -123,7 +226,38 @@ namespace CitiesManager.WebAPI.Controllers.v1
                 return Problem("Invalid name or password");
             }
 
+
+
         }
+
+
+        /*        [HttpPost("login-2FA")]
+                public async Task<ActionResult<ApplicationUser>> PostLogin2FA(string code,string useremail)
+                {
+                    ApplicationUser? user = await _userManager.FindByEmailAsync(useremail);
+                    var signIn =  _signInManager.ValidateTwoFactorSecurityStampAsync("Email", code, false, false);
+
+                    if (signIn.IsCompletedSuccessfully)
+                    {
+                       // ApplicationUser? user = await _userManager.FindByEmailAsync(useremail);
+                        if (user == null)
+                        {
+                            return NoContent();
+                        }
+                        var authenticationResponse = _jwtService.CreateJwtToken(user);
+                        user.RefreshToken = authenticationResponse.RefreshToken;
+                        user.RefreshTokenExpirationDateTime = authenticationResponse.RefreshTokenExpirationDateTime;
+                        await _userManager.UpdateAsync(user);
+                        return Ok(authenticationResponse);
+                    }
+                    else
+                    {
+                        return Problem("Invalid name or password");
+                    }
+
+
+
+                }*/
 
 
         [HttpGet("logout")]
