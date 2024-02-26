@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CitiesManager.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Iintial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -65,6 +65,22 @@ namespace CitiesManager.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Cities", x => x.CityId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Persons",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Age = table.Column<int>(type: "int", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Persons", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -178,9 +194,9 @@ namespace CitiesManager.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("433e4f6a-3d5e-464a-83a1-1b23607f94db"), null, "Administrator", "ADMINISTRATOR" },
-                    { new Guid("7d6a3a8c-3759-4bfe-a27a-6a46dc7732ed"), null, "User", "USER" },
-                    { new Guid("f913a30a-0b62-4a3f-9fde-35b4b1fcfb64"), null, "Manager", "MANAGER" }
+                    { new Guid("75161ee7-c6f3-4494-9def-f2f3211bea61"), null, "Administrator", "ADMINISTRATOR" },
+                    { new Guid("822c2e3a-fc42-42fe-aac4-a5c52524e526"), null, "Manager", "MANAGER" },
+                    { new Guid("db8ff118-6c1d-4b75-875b-9469597820a8"), null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -243,6 +259,9 @@ namespace CitiesManager.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Cities");
+
+            migrationBuilder.DropTable(
+                name: "Persons");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

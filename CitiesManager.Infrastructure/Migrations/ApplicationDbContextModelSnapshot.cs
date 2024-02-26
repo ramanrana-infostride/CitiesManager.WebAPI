@@ -22,6 +22,31 @@ namespace CitiesManager.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CitiesManager.Core.Entities.Person", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Persons");
+                });
+
             modelBuilder.Entity("CitiesManager.Core.Identity.ApplicationRole", b =>
                 {
                     b.Property<Guid>("Id")
@@ -52,19 +77,19 @@ namespace CitiesManager.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("433e4f6a-3d5e-464a-83a1-1b23607f94db"),
+                            Id = new Guid("75161ee7-c6f3-4494-9def-f2f3211bea61"),
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = new Guid("7d6a3a8c-3759-4bfe-a27a-6a46dc7732ed"),
+                            Id = new Guid("db8ff118-6c1d-4b75-875b-9469597820a8"),
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = new Guid("f913a30a-0b62-4a3f-9fde-35b4b1fcfb64"),
+                            Id = new Guid("822c2e3a-fc42-42fe-aac4-a5c52524e526"),
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         });

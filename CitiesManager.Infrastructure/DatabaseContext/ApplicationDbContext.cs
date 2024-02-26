@@ -1,4 +1,6 @@
-﻿using CitiesManager.Core.Identity;
+﻿using CitiesManager.Core.DTO;
+using CitiesManager.Core.Entities;
+using CitiesManager.Core.Identity;
 using CitiesManager.Core.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -16,13 +18,13 @@ namespace CitiesManager.Infrastructure.DatabaseContext
 
         public virtual DbSet<City> Cities { get; set; }
 
-
+        public DbSet<Person> Persons { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+            
             modelBuilder.Entity<ApplicationRole>().HasData(new ApplicationRole()
             {
                 Id = Guid.NewGuid(),
